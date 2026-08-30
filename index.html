@@ -8,19 +8,50 @@
 <title>No Trace — OSINT Framework</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:auto;
+    background:#050505;
+}
+
 body{
     background:#050505;
     color:#fff;
     font-family:Inter,Arial,Helvetica,sans-serif;
     overflow-x:hidden;
+    overflow-y:auto;
+    overscroll-behavior-y:none;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
 }
-body::-webkit-scrollbar{width:5px}
-body::-webkit-scrollbar-track{background:#050505}
-body::-webkit-scrollbar-thumb{background:#fff;border-radius:20px}
 
-a{text-decoration:none;color:inherit}
+body::-webkit-scrollbar{
+    width:5px;
+}
+
+body::-webkit-scrollbar-track{
+    background:#050505;
+}
+
+body::-webkit-scrollbar-thumb{
+    background:#fff;
+    border-radius:20px;
+}
+
+a{
+    text-decoration:none;
+    color:inherit;
+}
+
+button,
+a{
+    -webkit-tap-highlight-color:transparent;
+}
 
 :root{
     --bg:#050505;
@@ -44,6 +75,8 @@ a{text-decoration:none;color:inherit}
     width:8px;
     height:8px;
     position:fixed;
+    left:0;
+    top:0;
     border-radius:50%;
     background:#fff;
     pointer-events:none;
@@ -56,12 +89,17 @@ a{text-decoration:none;color:inherit}
     width:32px;
     height:32px;
     position:fixed;
+    left:0;
+    top:0;
     border:1px solid rgba(255,255,255,.5);
     border-radius:50%;
     pointer-events:none;
     z-index:9998;
     transform:translate(-50%,-50%);
-    transition:width .25s,height .25s;
+    transition:
+        width .25s ease,
+        height .25s ease,
+        border-color .25s ease;
     mix-blend-mode:difference;
 }
 
@@ -79,6 +117,7 @@ a{text-decoration:none;color:inherit}
     border-bottom:1px solid rgba(255,255,255,.07);
     background:rgba(5,5,5,.72);
     backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
 }
 
 .logo{
@@ -87,6 +126,7 @@ a{text-decoration:none;color:inherit}
     gap:12px;
     font-weight:800;
     letter-spacing:-.04em;
+    flex-shrink:0;
 }
 
 .logo-mark{
@@ -97,6 +137,7 @@ a{text-decoration:none;color:inherit}
     display:grid;
     place-items:center;
     position:relative;
+    overflow:hidden;
 }
 
 .logo-mark:before{
@@ -105,10 +146,21 @@ a{text-decoration:none;color:inherit}
     height:9px;
     background:#fff;
     border-radius:50%;
+    box-shadow:0 0 15px rgba(255,255,255,.5);
+}
+
+.logo-mark:after{
+    content:"";
+    position:absolute;
+    inset:5px;
+    border:1px solid rgba(255,255,255,.25);
+    border-radius:50%;
+    animation:logoRotate 6s linear infinite;
 }
 
 .logo-text{
     font-size:15px;
+    white-space:nowrap;
 }
 
 .logo-text span{
@@ -118,6 +170,8 @@ a{text-decoration:none;color:inherit}
 .nav-links{
     display:flex;
     gap:28px;
+    margin-left:auto;
+    margin-right:28px;
 }
 
 .nav-links a{
@@ -125,7 +179,9 @@ a{text-decoration:none;color:inherit}
     font-size:12px;
     text-transform:uppercase;
     letter-spacing:.16em;
-    transition:.3s;
+    transition:
+        color .3s ease,
+        opacity .3s ease;
 }
 
 .nav-links a:hover,
@@ -140,30 +196,38 @@ a{text-decoration:none;color:inherit}
     font-size:11px;
     text-transform:uppercase;
     letter-spacing:.15em;
-    transition:.3s;
+    transition:
+        background .3s ease,
+        color .3s ease,
+        border-color .3s ease;
+    white-space:nowrap;
 }
 
 .nav-cta:hover{
     background:#fff;
     color:#000;
+    border-color:#fff;
+}
+
+main{
+    position:relative;
+    width:100%;
 }
 
 .section{
-    min-height:100vh;
+    min-height:100svh;
+    height:auto;
     position:relative;
     display:flex;
     align-items:center;
     justify-content:center;
     padding:110px 7vw;
     scroll-snap-align:start;
-}
-
-body{
-    scroll-snap-type:y proximity;
+    scroll-snap-stop:always;
 }
 
 .hero{
-    min-height:100vh;
+    min-height:100svh;
     overflow:hidden;
 }
 
@@ -176,6 +240,16 @@ body{
         linear-gradient(90deg,rgba(255,255,255,.15) 1px,transparent 1px);
     background-size:80px 80px;
     mask-image:radial-gradient(circle at center,#000,transparent 75%);
+    -webkit-mask-image:radial-gradient(circle at center,#000,transparent 75%);
+}
+
+.hero-grid:before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+        radial-gradient(circle at 50% 50%,rgba(255,255,255,.08),transparent 30%),
+        linear-gradient(180deg,transparent 0%,rgba(0,0,0,.35) 100%);
 }
 
 .hero-content{
@@ -198,6 +272,7 @@ body{
     letter-spacing:.2em;
     margin-bottom:30px;
     background:rgba(255,255,255,.025);
+    backdrop-filter:blur(10px);
 }
 
 .eyebrow-dot{
@@ -214,10 +289,12 @@ body{
     line-height:.8;
     letter-spacing:-.09em;
     font-weight:900;
+    will-change:transform;
 }
 
 .hero h1 span{
     color:transparent;
+    -webkit-text-fill-color:transparent;
     -webkit-text-stroke:1px rgba(255,255,255,.7);
 }
 
@@ -244,9 +321,14 @@ body{
     font-size:11px;
     text-transform:uppercase;
     letter-spacing:.16em;
-    transition:.35s;
+    transition:
+        color .35s ease,
+        background .35s ease,
+        border-color .35s ease,
+        transform .35s ease;
     position:relative;
     overflow:hidden;
+    isolation:isolate;
 }
 
 .button:after{
@@ -255,12 +337,13 @@ body{
     inset:0;
     background:#fff;
     transform:translateY(105%);
-    transition:.35s;
+    transition:transform .35s cubic-bezier(.16,1,.3,1);
     z-index:-1;
 }
 
 .button:hover{
     color:#000;
+    transform:translateY(-2px);
 }
 
 .button:hover:after{
@@ -289,6 +372,7 @@ body{
     font-size:9px;
     letter-spacing:.3em;
     text-transform:uppercase;
+    white-space:nowrap;
 }
 
 .scroll-line{
@@ -355,13 +439,31 @@ body{
     padding:25px;
     position:relative;
     overflow:hidden;
-    transition:.4s;
+    transition:
+        border-color .4s ease,
+        background .4s ease,
+        transform .4s cubic-bezier(.16,1,.3,1);
+}
+
+.module:before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:0;
+    width:0;
+    height:1px;
+    background:#fff;
+    transition:width .5s cubic-bezier(.16,1,.3,1);
 }
 
 .module:hover{
     border-color:rgba(255,255,255,.45);
     background:rgba(255,255,255,.05);
     transform:translateY(-5px);
+}
+
+.module:hover:before{
+    width:100%;
 }
 
 .module-number{
@@ -378,6 +480,17 @@ body{
     place-items:center;
     border-radius:50%;
     margin-bottom:20px;
+    color:#aaa;
+    transition:
+        border-color .3s ease,
+        color .3s ease,
+        transform .5s ease;
+}
+
+.module:hover .module-icon{
+    border-color:#fff;
+    color:#fff;
+    transform:rotate(180deg);
 }
 
 .module h3{
@@ -403,11 +516,13 @@ body{
 
 .target{
     display:grid;
-    grid-template-columns:80px 1fr auto;
+    grid-template-columns:80px 1fr auto 30px;
     align-items:center;
     min-height:100px;
     border-bottom:1px solid var(--line);
-    transition:.4s;
+    transition:
+        padding-left .4s cubic-bezier(.16,1,.3,1),
+        background .4s ease;
 }
 
 .target:hover{
@@ -435,7 +550,9 @@ body{
 .target-arrow{
     color:#555;
     font-size:20px;
-    transition:.3s;
+    transition:
+        color .3s ease,
+        transform .3s ease;
 }
 
 .target:hover .target-arrow{
@@ -459,6 +576,17 @@ body{
     padding:30px;
     min-height:300px;
     position:relative;
+    overflow:hidden;
+    transition:
+        border-color .35s ease,
+        transform .35s ease,
+        background .35s ease;
+}
+
+.workflow-card:hover{
+    border-color:rgba(255,255,255,.35);
+    transform:translateY(-5px);
+    background:rgba(255,255,255,.025);
 }
 
 .workflow-card:before{
@@ -469,7 +597,7 @@ body{
     width:0;
     height:1px;
     background:#fff;
-    transition:.5s;
+    transition:width .5s cubic-bezier(.16,1,.3,1);
 }
 
 .workflow-card:hover:before{
@@ -510,6 +638,7 @@ body{
     border:1px solid var(--line);
     background:#030303;
     box-shadow:0 25px 80px rgba(0,0,0,.5);
+    overflow:hidden;
 }
 
 .terminal-top{
@@ -537,8 +666,14 @@ body{
     color:#777;
 }
 
-.term-white{color:#fff}
-.term-dim{color:#444}
+.term-white{
+    color:#fff;
+}
+
+.term-dim{
+    color:#444;
+}
+
 .term-cursor{
     display:inline-block;
     width:6px;
@@ -576,6 +711,19 @@ body{
 .orbit-section{
     background:#050505;
     overflow:hidden;
+    perspective:1000px;
+}
+
+.orbit-stage{
+    width:560px;
+    height:560px;
+    max-width:90vw;
+    max-height:90vw;
+    position:relative;
+    display:grid;
+    place-items:center;
+    transform-style:preserve-3d;
+    will-change:transform;
 }
 
 .orbit-wrapper{
@@ -586,6 +734,8 @@ body{
     position:relative;
     display:grid;
     place-items:center;
+    transform-style:preserve-3d;
+    transition:transform .6s cubic-bezier(.16,1,.3,1);
 }
 
 .orbit-ring{
@@ -594,20 +744,34 @@ body{
     height:100%;
     border:1px solid rgba(255,255,255,.08);
     border-radius:50%;
+    pointer-events:none;
+    transform-style:preserve-3d;
+}
+
+.orbit-ring:nth-child(1){
     animation:rotate 28s linear infinite;
 }
 
 .orbit-ring:nth-child(2){
     width:76%;
     height:76%;
-    animation-duration:21s;
-    animation-direction:reverse;
+    animation:rotateReverse 21s linear infinite;
 }
 
 .orbit-ring:nth-child(3){
     width:52%;
     height:52%;
-    animation-duration:15s;
+    animation:rotate 15s linear infinite;
+}
+
+.orbit-glow{
+    position:absolute;
+    width:240px;
+    height:240px;
+    border-radius:50%;
+    background:radial-gradient(circle,rgba(255,255,255,.07),transparent 70%);
+    filter:blur(12px);
+    pointer-events:none;
 }
 
 .core{
@@ -619,11 +783,20 @@ body{
     display:grid;
     place-items:center;
     position:relative;
-    z-index:4;
+    z-index:20;
     box-shadow:
         0 0 60px rgba(255,255,255,.15),
         0 0 150px rgba(255,255,255,.05);
     animation:coreFloat 4s ease-in-out infinite;
+}
+
+.core:before{
+    content:"";
+    position:absolute;
+    inset:-12px;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:50%;
+    animation:corePulse 3s ease-in-out infinite;
 }
 
 .core-inner{
@@ -638,8 +811,16 @@ body{
     letter-spacing:.12em;
 }
 
-.social{
+.social-orbit{
     position:absolute;
+    inset:0;
+    border-radius:50%;
+    animation:orbitRotation 24s linear infinite;
+    transform-style:preserve-3d;
+    pointer-events:none;
+}
+
+.social{
     width:54px;
     height:54px;
     border:1px solid rgba(255,255,255,.4);
@@ -647,31 +828,90 @@ body{
     background:#050505;
     display:grid;
     place-items:center;
-    z-index:5;
-    transition:.3s;
+    position:absolute;
+    z-index:25;
+    transition:
+        background .3s ease,
+        color .3s ease,
+        border-color .3s ease,
+        box-shadow .3s ease;
+    pointer-events:auto;
+}
+
+.social:after{
+    content:"";
+    position:absolute;
+    inset:-5px;
+    border:1px solid rgba(255,255,255,.04);
+    border-radius:50%;
+    transition:border-color .3s ease;
 }
 
 .social:hover{
     background:#fff;
     color:#000;
-    transform:scale(1.15);
+    border-color:#fff;
+    box-shadow:0 0 25px rgba(255,255,255,.15);
+}
+
+.social:hover:after{
+    border-color:rgba(255,255,255,.2);
 }
 
 .social svg{
     width:21px;
     height:21px;
     fill:currentColor;
+    position:relative;
+    z-index:2;
 }
 
-.social.s1{top:5%;left:48%;animation:float1 4s ease-in-out infinite}
-.social.s2{top:26%;right:4%;animation:float2 4.5s ease-in-out infinite}
-.social.s3{bottom:18%;right:11%;animation:float3 5s ease-in-out infinite}
-.social.s4{bottom:3%;left:45%;animation:float1 4.7s ease-in-out infinite}
-.social.s5{bottom:19%;left:8%;animation:float2 4.3s ease-in-out infinite}
-.social.s6{top:25%;left:5%;animation:float3 5.2s ease-in-out infinite}
+.social.s1{
+    top:-27px;
+    left:50%;
+    transform:translateX(-50%);
+}
+
+.social.s2{
+    top:24%;
+    right:-27px;
+}
+
+.social.s3{
+    bottom:10%;
+    right:8%;
+}
+
+.social.s4{
+    bottom:-27px;
+    left:50%;
+    transform:translateX(-50%);
+}
+
+.social.s5{
+    bottom:10%;
+    left:8%;
+}
+
+.social.s6{
+    top:24%;
+    left:-27px;
+}
+
+.orbit-label{
+    position:absolute;
+    bottom:-42px;
+    left:50%;
+    transform:translateX(-50%);
+    color:#444;
+    font-size:9px;
+    text-transform:uppercase;
+    letter-spacing:.25em;
+    white-space:nowrap;
+}
 
 .final{
-    min-height:90vh;
+    min-height:90svh;
     background:#fff;
     color:#000;
     text-align:center;
@@ -721,7 +961,7 @@ body{
     font-size:10px;
     text-transform:uppercase;
     letter-spacing:.15em;
-    transition:.3s;
+    transition:color .3s ease;
 }
 
 .footer-links a:hover{
@@ -768,103 +1008,364 @@ body{
 }
 
 @keyframes pulse{
-    0%,100%{opacity:.4;transform:scale(.8)}
-    50%{opacity:1;transform:scale(1.2)}
+    0%,100%{
+        opacity:.4;
+        transform:scale(.8);
+    }
+    50%{
+        opacity:1;
+        transform:scale(1.2);
+    }
 }
 
 @keyframes scrollLine{
-    0%{transform:scaleY(0);transform-origin:top}
-    50%{transform:scaleY(1);transform-origin:top}
-    51%{transform:scaleY(1);transform-origin:bottom}
-    100%{transform:scaleY(0);transform-origin:bottom}
+    0%{
+        transform:scaleY(0);
+        transform-origin:top;
+    }
+    50%{
+        transform:scaleY(1);
+        transform-origin:top;
+    }
+    51%{
+        transform:scaleY(1);
+        transform-origin:bottom;
+    }
+    100%{
+        transform:scaleY(0);
+        transform-origin:bottom;
+    }
 }
 
 @keyframes rotate{
-    from{transform:rotate(0)}
-    to{transform:rotate(360deg)}
+    from{
+        transform:rotate(0deg);
+    }
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+@keyframes rotateReverse{
+    from{
+        transform:rotate(360deg);
+    }
+    to{
+        transform:rotate(0deg);
+    }
+}
+
+@keyframes orbitRotation{
+    from{
+        transform:rotate(0deg);
+    }
+    to{
+        transform:rotate(360deg);
+    }
 }
 
 @keyframes coreFloat{
-    0%,100%{transform:translateY(0)}
-    50%{transform:translateY(-12px)}
+    0%,100%{
+        transform:translateY(0);
+    }
+    50%{
+        transform:translateY(-12px);
+    }
 }
 
-@keyframes float1{
-    0%,100%{transform:translateY(0)}
-    50%{transform:translateY(-9px)}
+@keyframes corePulse{
+    0%,100%{
+        opacity:.25;
+        transform:scale(.96);
+    }
+    50%{
+        opacity:.7;
+        transform:scale(1.04);
+    }
 }
 
-@keyframes float2{
-    0%,100%{transform:translateY(0)}
-    50%{transform:translateY(8px)}
-}
-
-@keyframes float3{
-    0%,100%{transform:translateX(0)}
-    50%{transform:translateX(7px)}
+@keyframes logoRotate{
+    from{
+        transform:rotate(0deg);
+    }
+    to{
+        transform:rotate(360deg);
+    }
 }
 
 @keyframes blink{
-    50%{opacity:0}
+    50%{
+        opacity:0;
+    }
+}
+
+@media(max-width:1100px){
+    .nav-links{
+        gap:18px;
+        margin-right:18px;
+    }
+
+    .framework-layout{
+        gap:50px;
+    }
+
+    .visual-layout{
+        gap:60px;
+    }
 }
 
 @media(max-width:900px){
-    .nav-links{display:none}
+    .nav-links{
+        display:none;
+    }
+
+    .nav{
+        padding:0 24px;
+    }
+
     .framework-layout,
     .visual-layout{
         grid-template-columns:1fr;
         gap:50px;
     }
+
     .workflow-grid{
         grid-template-columns:1fr;
     }
-    .modules{
-        grid-template-columns:1fr 1fr;
-    }
+
     .visual-layout{
         padding-top:40px;
     }
+
+    .orbit-stage{
+        width:520px;
+        height:520px;
+    }
 }
 
-@media(max-width:600px){
+@media(max-width:700px){
     .section{
+        min-height:100svh;
         padding:100px 22px;
     }
+
+    .hero{
+        min-height:100svh;
+    }
+
     .hero h1{
         font-size:22vw;
     }
+
+    .hero-sub{
+        font-size:13px;
+        max-width:500px;
+    }
+
+    .scroll-indicator{
+        bottom:22px;
+    }
+
     .modules{
         grid-template-columns:1fr;
     }
+
     .target{
         grid-template-columns:45px 1fr 20px;
+        min-height:85px;
     }
+
     .target-name{
         font-size:17px;
     }
+
     .target-info{
         display:none;
     }
+
     .stats{
         grid-template-columns:1fr;
     }
+
     .footer{
         flex-direction:column;
         gap:25px;
         align-items:flex-start;
     }
+
+    .orbit-stage{
+        width:430px;
+        height:430px;
+        max-width:100%;
+        max-height:none;
+    }
+
     .orbit-wrapper{
         width:390px;
         height:390px;
+        max-width:92vw;
+        max-height:92vw;
     }
+
     .core{
         width:115px;
         height:115px;
     }
+
     .core-inner{
         width:85px;
         height:85px;
         font-size:10px;
+    }
+
+    .social{
+        width:48px;
+        height:48px;
+    }
+
+    .social.s1{
+        top:-24px;
+    }
+
+    .social.s2{
+        right:-24px;
+    }
+
+    .social.s3{
+        right:7%;
+    }
+
+    .social.s4{
+        bottom:-24px;
+    }
+
+    .social.s5{
+        left:7%;
+    }
+
+    .social.s6{
+        left:-24px;
+    }
+
+    .terminal-body{
+        min-height:330px;
+        padding:20px;
+        font-size:10px;
+    }
+
+    .section-title{
+        font-size:clamp(42px,14vw,70px);
+    }
+}
+
+@media(max-width:480px){
+    .nav{
+        height:68px;
+        padding:0 18px;
+    }
+
+    .logo-text{
+        font-size:12px;
+    }
+
+    .logo-mark{
+        width:28px;
+        height:28px;
+    }
+
+    .nav-cta{
+        padding:9px 12px;
+        font-size:9px;
+    }
+
+    .section{
+        padding:90px 18px;
+    }
+
+    .module{
+        min-height:175px;
+    }
+
+    .workflow-card{
+        min-height:250px;
+    }
+
+    .workflow-card h3{
+        margin-top:55px;
+    }
+
+    .target-name{
+        font-size:15px;
+    }
+
+    .target{
+        grid-template-columns:35px 1fr 18px;
+    }
+
+    .orbit-stage{
+        width:360px;
+        height:360px;
+    }
+
+    .orbit-wrapper{
+        width:320px;
+        height:320px;
+    }
+
+    .social{
+        width:44px;
+        height:44px;
+    }
+
+    .social svg{
+        width:17px;
+        height:17px;
+    }
+
+    .social.s1{
+        top:-22px;
+    }
+
+    .social.s2{
+        right:-22px;
+    }
+
+    .social.s4{
+        bottom:-22px;
+    }
+
+    .social.s6{
+        left:-22px;
+    }
+
+    .core{
+        width:95px;
+        height:95px;
+    }
+
+    .core-inner{
+        width:70px;
+        height:70px;
+        font-size:8px;
+    }
+
+    .footer-links{
+        flex-wrap:wrap;
+        gap:15px;
+    }
+}
+
+@media(prefers-reduced-motion:reduce){
+    html{
+        scroll-behavior:auto;
+    }
+
+    *,
+    *:before,
+    *:after{
+        animation-duration:.001ms !important;
+        animation-iteration-count:1 !important;
+        transition-duration:.001ms !important;
     }
 }
 </style>
@@ -873,60 +1374,100 @@ body{
 <body>
 
 <div class="noise"></div>
+
 <div class="cursor" id="cursor"></div>
+
 <div class="cursor-ring" id="cursorRing"></div>
 
 <header class="nav">
 
     <a class="logo" href="#home">
+
         <div class="logo-mark"></div>
-        <div class="logo-text">NO TRACE <span>/ OSINT</span></div>
+
+        <div class="logo-text">
+            NO TRACE <span>/ OSINT</span>
+        </div>
+
     </a>
 
     <nav class="nav-links">
-        <a href="#framework">Framework</a>
-        <a href="#targets">Targets</a>
-        <a href="#workflow">Workflow</a>
-        <a href="#network">Network</a>
+
+        <a href="#framework">
+            Framework
+        </a>
+
+        <a href="#targets">
+            Targets
+        </a>
+
+        <a href="#workflow">
+            Workflow
+        </a>
+
+        <a href="#network">
+            Network
+        </a>
+
     </nav>
 
-    <!-- PUT YOUR FRAMEWORK LINK HERE -->
-    <a class="nav-cta" href="YOUR_FRAMEWORK_LINK_HERE">Launch Framework</a>
+    <a
+        class="nav-cta"
+        href="https://pugilain-executer.github.io/No-Trance-Osint/framework.html"
+    >
+        Launch Framework
+    </a>
 
 </header>
 
 <main>
 
-<section class="section hero" id="home">
+<section
+    class="section hero"
+    id="home"
+>
 
     <div class="hero-grid"></div>
 
     <div class="hero-content reveal">
 
         <div class="eyebrow">
+
             <span class="eyebrow-dot"></span>
+
             Open Source Intelligence Framework
+
         </div>
 
         <h1>
+
             NO<br>
+
             <span>TRACE</span>
+
         </h1>
 
         <p class="hero-sub">
+
             A focused OSINT framework designed to organize investigations,
             discover intelligence sources and move through research workflows
             without unnecessary noise.
+
         </p>
 
         <div class="hero-actions">
 
-            <!-- PUT YOUR FRAMEWORK PAGE LINK HERE -->
-            <a href="YOUR_FRAMEWORK_LINK_HERE" class="button primary">
+            <a
+                href="https://pugilain-executer.github.io/No-Trance-Osint/framework.html"
+                class="button primary"
+            >
                 Enter Framework
             </a>
 
-            <a href="#framework" class="button">
+            <a
+                href="#framework"
+                class="button"
+            >
                 Explore System
             </a>
 
@@ -935,14 +1476,19 @@ body{
     </div>
 
     <div class="scroll-indicator">
+
         Scroll to explore
+
         <div class="scroll-line"></div>
+
     </div>
 
 </section>
 
-
-<section class="section framework" id="framework">
+<section
+    class="section framework"
+    id="framework"
+>
 
     <div class="section-inner">
 
@@ -955,22 +1501,29 @@ body{
                 </div>
 
                 <h2 class="section-title">
+
                     Intelligence<br>
+
                     <span>without noise.</span>
+
                 </h2>
 
                 <p class="section-description">
+
                     No Trace is built around a simple idea:
                     keep the investigation workflow clean.
                     Each category represents a different direction
                     of research and can lead directly to the tools
                     inside the framework.
+
                 </p>
 
                 <div style="margin-top:35px">
 
-                    <!-- PUT YOUR FRAMEWORK LINK HERE -->
-                    <a href="YOUR_FRAMEWORK_LINK_HERE" class="button">
+                    <a
+                        href="https://pugilain-executer.github.io/No-Trance-Osint/framework.html"
+                        class="button"
+                    >
                         Open Framework
                     </a>
 
@@ -980,44 +1533,100 @@ body{
 
             <div class="modules reveal-right">
 
-                <a class="module" href="YOUR_PEOPLE_LINK_HERE">
-                    <div class="module-number">01</div>
-                    <div class="module-icon">P</div>
-                    <h3>People</h3>
+                <a
+                    class="module"
+                    href="https://pugilain-executer.github.io/No-Trance-Osint/framework.html"
+                >
+
+                    <div class="module-number">
+                        01
+                    </div>
+
+                    <div class="module-icon">
+                        P
+                    </div>
+
+                    <h3>
+                        People
+                    </h3>
+
                     <p>
                         Research paths focused on public information
                         surrounding people and identities.
                     </p>
+
                 </a>
 
-                <a class="module" href="YOUR_USERNAME_LINK_HERE">
-                    <div class="module-number">02</div>
-                    <div class="module-icon">@</div>
-                    <h3>Usernames</h3>
+                <a
+                    class="module"
+                    href="https://pugilain-executer.github.io/No-Trance-Osint/framework.html"
+                >
+
+                    <div class="module-number">
+                        02
+                    </div>
+
+                    <div class="module-icon">
+                        @
+                    </div>
+
+                    <h3>
+                        Usernames
+                    </h3>
+
                     <p>
                         Investigate username presence and discover
                         publicly available account references.
                     </p>
+
                 </a>
 
-                <a class="module" href="YOUR_DOMAINS_LINK_HERE">
-                    <div class="module-number">03</div>
-                    <div class="module-icon">D</div>
-                    <h3>Domains</h3>
+                <a
+                    class="module"
+                    href="https://pugilain-executer.github.io/No-Trance-Osint/framework.html"
+                >
+
+                    <div class="module-number">
+                        03
+                    </div>
+
+                    <div class="module-icon">
+                        D
+                    </div>
+
+                    <h3>
+                        Domains
+                    </h3>
+
                     <p>
                         Organize domain-oriented research and
                         publicly available infrastructure information.
                     </p>
+
                 </a>
 
-                <a class="module" href="YOUR_SOCIAL_LINK_HERE">
-                    <div class="module-number">04</div>
-                    <div class="module-icon">S</div>
-                    <h3>Social</h3>
+                <a
+                    class="module"
+                    href="https://pugilain-executer.github.io/No-Trance-Osint/framework.html"
+                >
+
+                    <div class="module-number">
+                        04
+                    </div>
+
+                    <div class="module-icon">
+                        S
+                    </div>
+
+                    <h3>
+                        Social
+                    </h3>
+
                     <p>
                         Navigate social platforms and public
                         sources from one organized interface.
                     </p>
+
                 </a>
 
             </div>
@@ -1028,8 +1637,10 @@ body{
 
 </section>
 
-
-<section class="section targets" id="targets">
+<section
+    class="section targets"
+    id="targets"
+>
 
     <div class="section-inner reveal">
 
@@ -1038,52 +1649,135 @@ body{
         </div>
 
         <h2 class="section-title">
+
             One surface.<br>
+
             <span>Multiple directions.</span>
+
         </h2>
 
         <p class="section-description">
+
             Instead of filling the interface with unnecessary controls,
             No Trace separates investigation paths into clear destinations.
+
         </p>
 
         <div class="target-list">
 
-            <!-- PUT THE CORRESPONDING LINK IN EACH HREF -->
+            <a
+                class="target"
+                href="https://pugilain-executer.github.io/No-Trance-Osint/framework.html"
+            >
 
-            <a class="target" href="https://pugilain-executer.github.io/No-Trance-Osint/framework.html">
-                <div class="target-index">01</div>
-                <div class="target-name">Search Intelligence</div>
-                <div class="target-info">Public Sources</div>
-                <div class="target-arrow">→</div>
+                <div class="target-index">
+                    01
+                </div>
+
+                <div class="target-name">
+                    Search Intelligence
+                </div>
+
+                <div class="target-info">
+                    Public Sources
+                </div>
+
+                <div class="target-arrow">
+                    →
+                </div>
+
             </a>
 
-            <a class="target" href="https://pugilain-executer.github.io/No-Trance-Osint/framework.html">
-                <div class="target-index">02</div>
-                <div class="target-name">Social Intelligence</div>
-                <div class="target-info">Platforms</div>
-                <div class="target-arrow">→</div>
+            <a
+                class="target"
+                href="https://pugilain-executer.github.io/No-Trance-Osint/framework.html"
+            >
+
+                <div class="target-index">
+                    02
+                </div>
+
+                <div class="target-name">
+                    Social Intelligence
+                </div>
+
+                <div class="target-info">
+                    Platforms
+                </div>
+
+                <div class="target-arrow">
+                    →
+                </div>
+
             </a>
 
-            <a class="target" href="https://pugilain-executer.github.io/No-Trance-Osint/framework.html">
-                <div class="target-index">03</div>
-                <div class="target-name">Domain Intelligence</div>
-                <div class="target-info">Infrastructure</div>
-                <div class="target-arrow">→</div>
+            <a
+                class="target"
+                href="https://pugilain-executer.github.io/No-Trance-Osint/framework.html"
+            >
+
+                <div class="target-index">
+                    03
+                </div>
+
+                <div class="target-name">
+                    Domain Intelligence
+                </div>
+
+                <div class="target-info">
+                    Infrastructure
+                </div>
+
+                <div class="target-arrow">
+                    →
+                </div>
+
             </a>
 
-            <a class="target" href="https://pugilain-executer.github.io/No-Trance-Osint/framework.html">
-                <div class="target-index">04</div>
-                <div class="target-name">Username Intelligence</div>
-                <div class="target-info">Identity</div>
-                <div class="target-arrow">→</div>
+            <a
+                class="target"
+                href="https://pugilain-executer.github.io/No-Trance-Osint/framework.html"
+            >
+
+                <div class="target-index">
+                    04
+                </div>
+
+                <div class="target-name">
+                    Username Intelligence
+                </div>
+
+                <div class="target-info">
+                    Identity
+                </div>
+
+                <div class="target-arrow">
+                    →
+                </div>
+
             </a>
 
-            <a class="target" href="https://pugilain-executer.github.io/No-Trance-Osint/framework.html">
-                <div class="target-index">05</div>
-                <div class="target-name">Document Intelligence</div>
-                <div class="target-info">Metadata</div>
-                <div class="target-arrow">→</div>
+            <a
+                class="target"
+                href="https://pugilain-executer.github.io/No-Trance-Osint/framework.html"
+            >
+
+                <div class="target-index">
+                    05
+                </div>
+
+                <div class="target-name">
+                    Document Intelligence
+                </div>
+
+                <div class="target-info">
+                    Metadata
+                </div>
+
+                <div class="target-arrow">
+                    →
+                </div>
+
             </a>
 
         </div>
@@ -1092,8 +1786,10 @@ body{
 
 </section>
 
-
-<section class="section workflow" id="workflow">
+<section
+    class="section workflow"
+    id="workflow"
+>
 
     <div class="section-inner">
 
@@ -1104,13 +1800,18 @@ body{
             </div>
 
             <h2 class="section-title">
+
                 Built for<br>
+
                 <span>investigation.</span>
+
             </h2>
 
             <p class="section-description">
+
                 Start with a lead, follow the available public sources,
                 organize what you find and move deeper only when necessary.
+
             </p>
 
         </div>
@@ -1118,30 +1819,54 @@ body{
         <div class="workflow-grid">
 
             <div class="workflow-card reveal">
-                <div class="workflow-num">STEP / 01</div>
-                <h3>Discover</h3>
+
+                <div class="workflow-num">
+                    STEP / 01
+                </div>
+
+                <h3>
+                    Discover
+                </h3>
+
                 <p>
                     Begin with a known piece of information and identify
                     relevant public sources.
                 </p>
+
             </div>
 
             <div class="workflow-card reveal">
-                <div class="workflow-num">STEP / 02</div>
-                <h3>Connect</h3>
+
+                <div class="workflow-num">
+                    STEP / 02
+                </div>
+
+                <h3>
+                    Connect
+                </h3>
+
                 <p>
                     Compare information across independent sources and
                     identify useful relationships.
                 </p>
+
             </div>
 
             <div class="workflow-card reveal">
-                <div class="workflow-num">STEP / 03</div>
-                <h3>Verify</h3>
+
+                <div class="workflow-num">
+                    STEP / 03
+                </div>
+
+                <h3>
+                    Verify
+                </h3>
+
                 <p>
                     Cross-check findings before treating information
                     as reliable intelligence.
                 </p>
+
             </div>
 
         </div>
@@ -1150,8 +1875,9 @@ body{
 
 </section>
 
-
-<section class="section visual">
+<section
+    class="section visual"
+>
 
     <div class="section-inner">
 
@@ -1160,17 +1886,29 @@ body{
             <div class="terminal reveal-left">
 
                 <div class="terminal-top">
+
                     <span class="term-dot"></span>
+
                     <span class="term-dot"></span>
+
                     <span class="term-dot"></span>
+
                 </div>
 
                 <div class="terminal-body">
 
                     <div>
-                        <span class="term-dim">$</span>
-                        <span class="term-white"> no-trace</span>
+
+                        <span class="term-dim">
+                            $
+                        </span>
+
+                        <span class="term-white">
+                            no-trace
+                        </span>
+
                         initialize
+
                     </div>
 
                     <div class="term-dim">
@@ -1178,18 +1916,33 @@ body{
                     </div>
 
                     <div>
+
                         target.status:
-                        <span class="term-white"> READY</span>
+
+                        <span class="term-white">
+                            READY
+                        </span>
+
                     </div>
 
                     <div>
+
                         source.mode:
-                        <span class="term-white"> PUBLIC</span>
+
+                        <span class="term-white">
+                            PUBLIC
+                        </span>
+
                     </div>
 
                     <div>
+
                         framework:
-                        <span class="term-white"> ACTIVE</span>
+
+                        <span class="term-white">
+                            ACTIVE
+                        </span>
+
                     </div>
 
                     <br>
@@ -1217,7 +1970,11 @@ body{
                     <br>
 
                     <div class="term-white">
-                        system ready<span class="term-cursor"></span>
+
+                        system ready
+
+                        <span class="term-cursor"></span>
+
                     </div>
 
                 </div>
@@ -1231,31 +1988,57 @@ body{
                 </div>
 
                 <h2 class="section-title">
+
                     Clean<br>
+
                     <span>by design.</span>
+
                 </h2>
 
                 <p class="section-description">
+
                     No unnecessary dashboards. No endless forms.
                     No account wall. Just a focused entry point
                     into the investigation framework.
+
                 </p>
 
                 <div class="stats">
 
                     <div class="stat">
-                        <strong>01</strong>
-                        <span>Interface</span>
+
+                        <strong>
+                            01
+                        </strong>
+
+                        <span>
+                            Interface
+                        </span>
+
                     </div>
 
                     <div class="stat">
-                        <strong>∞</strong>
-                        <span>Sources</span>
+
+                        <strong>
+                            ∞
+                        </strong>
+
+                        <span>
+                            Sources
+                        </span>
+
                     </div>
 
                     <div class="stat">
-                        <strong>0</strong>
-                        <span>Registration</span>
+
+                        <strong>
+                            0
+                        </strong>
+
+                        <span>
+                            Registration
+                        </span>
+
                     </div>
 
                 </div>
@@ -1268,117 +2051,150 @@ body{
 
 </section>
 
+<section
+    class="section orbit-section"
+    id="network"
+>
 
-<section class="section orbit-section" id="network">
+    <div
+        class="orbit-stage"
+        id="orbitStage"
+    >
 
-    <div class="orbit-wrapper">
+        <div
+            class="orbit-wrapper"
+            id="orbitWrapper"
+        >
 
-        <div class="orbit-ring"></div>
-        <div class="orbit-ring"></div>
-        <div class="orbit-ring"></div>
+            <div class="orbit-ring"></div>
 
-        <div class="core">
-            <div class="core-inner">
-                NO TRACE
+            <div class="orbit-ring"></div>
+
+            <div class="orbit-ring"></div>
+
+            <div class="orbit-glow"></div>
+
+            <div class="social-orbit">
+
+                <a
+                    class="social s1"
+                    href="YOUR_X_LINK_HERE"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="X"
+                >
+
+                    <svg viewBox="0 0 24 24">
+
+                        <path d="M18.244 2H21.5l-7.11 8.13L22.75 22h-6.58l-5.15-6.74L5.12 22H1.86l7.61-8.7L1.25 2h6.75l4.65 6.15L18.244 2Zm-1.15 17.85h1.82L7 4.03H5.05L17.094 19.85Z"/>
+
+                    </svg>
+
+                </a>
+
+                <a
+                    class="social s2"
+                    href="YOUR_TIKTOK_LINK_HERE"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="TikTok"
+                >
+
+                    <svg viewBox="0 0 24 24">
+
+                        <path d="M16.7 3c.5 2.9 2.1 4.6 5.3 4.8v3.2c-1.8.1-3.4-.4-5.2-1.4v6.8c0 4.3-3 6.6-6.5 6.6-3.2 0-5.9-2.1-5.9-5.7 0-3.5 2.8-5.8 6.5-5.8.4 0 .8 0 1.2.1v3.3c-.4-.1-.8-.2-1.2-.2-1.8 0-3.2 1-3.2 2.6 0 1.5 1.1 2.4 2.6 2.4 1.6 0 3.1-.9 3.1-3.4V3h3.3Z"/>
+
+                    </svg>
+
+                </a>
+
+                <a
+                    class="social s3"
+                    href="YOUR_GITHUB_LINK_HERE"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="GitHub"
+                >
+
+                    <svg viewBox="0 0 24 24">
+
+                        <path d="M12 .7A12 12 0 0 0 8.2 24c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.5-1.3-1.3-1.6-1.3-1.6-1.1-.8.1-.8.1-.8.8.1 1.3.9 1.3.9 1.1 1.9 2.8 1.4 3.5 1.1.1-.8.4-1.4.7-1.7-2.7-.3-5.5-1.4-5.5-6A4.7 4.7 0 0 1 5 9.2a4.4 4.4 0 0 1 .1-3.5s1.1-.4 3.6 1.3a12.4 12.4 0 0 1 6.6 0c2.5-1.7 3.6-1.3 3.6-1.3a4.4 4.4 0 0 1 .1 3.5 4.7 4.7 0 0 1 1.3 3.3c0 4.6-2.8 5.7-5.5 6 .4.3.7 1 .7 2v3c0 .3.2.7.8.6A12 12 0 0 0 12 .7Z"/>
+
+                    </svg>
+
+                </a>
+
+                <a
+                    class="social s4"
+                    href="YOUR_DISCORD_LINK_HERE"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Discord"
+                >
+
+                    <svg viewBox="0 0 24 24">
+
+                        <path d="M19.5 5.1A16.2 16.2 0 0 0 15.7 4l-.5 1a14.4 14.4 0 0 0-6.4 0l-.5-1c-1.4.2-2.7.6-3.8 1.1C2.1 8.5 1.4 11.8 1.7 15c1.5 1.1 3 1.8 4.6 2.3l1.1-1.5c-.6-.2-1.1-.5-1.6-.8l.4-.3c3.1 1.4 6.5 1.4 9.6 0l.4.3c-.5.3-1 .6-1.6.8l1.1 1.5c1.6-.5 3.1-1.2 4.6-2.3.4-3.7-.6-7-2.8-9.9ZM8.9 13.1c-.9 0-1.7-.8-1.7-1.8s.8-1.8 1.7-1.8 1.7.8 1.7 1.8-.8 1.8-1.7 1.8Zm6.2 0c-.9 0-1.7-.8-1.7-1.8s.8-1.8 1.7-1.8 1.7.8 1.7 1.8-.8 1.8-1.7 1.8Z"/>
+
+                    </svg>
+
+                </a>
+
+                <a
+                    class="social s5"
+                    href="YOUR_INSTAGRAM_LINK_HERE"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Instagram"
+                >
+
+                    <svg viewBox="0 0 24 24">
+
+                        <path d="M7.2 2h9.6A5.2 5.2 0 0 1 22 7.2v9.6a5.2 5.2 0 0 1-5.2 5.2H7.2A5.2 5.2 0 0 1 2 16.8V7.2A5.2 5.2 0 0 1 7.2 2Zm-.1 2A3.1 3.1 0 0 0 4 7.1v9.8A3.1 3.1 0 0 0 7.1 20h9.8a3.1 3.1 0 0 0 3.1-3.1V7.1A3.1 3.1 0 0 0 16.9 4H7.1Zm9.7 1.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/>
+
+                    </svg>
+
+                </a>
+
+                <a
+                    class="social s6"
+                    href="YOUR_YOUTUBE_LINK_HERE"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="YouTube"
+                >
+
+                    <svg viewBox="0 0 24 24">
+
+                        <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.8V8.2l6.5 3.8-6.5 3.8Z"/>
+
+                    </svg>
+
+                </a>
+
             </div>
+
+            <div class="core">
+
+                <div class="core-inner">
+                    NO TRACE
+                </div>
+
+            </div>
+
         </div>
 
-
-        <!-- X -->
-        <!-- REPLACE href WITH YOUR X PROFILE -->
-        <a class="social s1"
-           href="YOUR_X_LINK_HERE"
-           target="_blank"
-           rel="noopener noreferrer"
-           aria-label="X">
-
-            <svg viewBox="0 0 24 24">
-                <path d="M18.244 2H21.5l-7.11 8.13L22.75 22h-6.58l-5.15-6.74L5.12 22H1.86l7.61-8.7L1.25 2h6.75l4.65 6.15L18.244 2Zm-1.15 17.85h1.82L7 4.03H5.05L17.094 19.85Z"/>
-            </svg>
-
-        </a>
-
-
-        <!-- TIKTOK -->
-        <!-- REPLACE href WITH YOUR TIKTOK PROFILE -->
-        <a class="social s2"
-           href="YOUR_TIKTOK_LINK_HERE"
-           target="_blank"
-           rel="noopener noreferrer"
-           aria-label="TikTok">
-
-            <svg viewBox="0 0 24 24">
-                <path d="M16.7 3c.5 2.9 2.1 4.6 5.3 4.8v3.2c-1.8.1-3.4-.4-5.2-1.4v6.8c0 4.3-3 6.6-6.5 6.6-3.2 0-5.9-2.1-5.9-5.7 0-3.5 2.8-5.8 6.5-5.8.4 0 .8 0 1.2.1v3.3c-.4-.1-.8-.2-1.2-.2-1.8 0-3.2 1-3.2 2.6 0 1.5 1.1 2.4 2.6 2.4 1.6 0 3.1-.9 3.1-3.4V3h3.3Z"/>
-            </svg>
-
-        </a>
-
-
-        <!-- GITHUB -->
-        <!-- REPLACE href WITH YOUR GITHUB LINK -->
-        <a class="social s3"
-           href="YOUR_GITHUB_LINK_HERE"
-           target="_blank"
-           rel="noopener noreferrer"
-           aria-label="GitHub">
-
-            <svg viewBox="0 0 24 24">
-                <path d="M12 .7A12 12 0 0 0 8.2 24c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.5-1.3-1.3-1.6-1.3-1.6-1.1-.8.1-.8.1-.8.8.1 1.3.9 1.3.9 1.1 1.9 2.8 1.4 3.5 1.1.1-.8.4-1.4.7-1.7-2.7-.3-5.5-1.4-5.5-6A4.7 4.7 0 0 1 5 9.2a4.4 4.4 0 0 1 .1-3.5s1.1-.4 3.6 1.3a12.4 12.4 0 0 1 6.6 0c2.5-1.7 3.6-1.3 3.6-1.3a4.4 4.4 0 0 1 .1 3.5 4.7 4.7 0 0 1 1.3 3.3c0 4.6-2.8 5.7-5.5 6 .4.3.7 1 .7 2v3c0 .3.2.7.8.6A12 12 0 0 0 12 .7Z"/>
-            </svg>
-
-        </a>
-
-
-        <!-- DISCORD -->
-        <!-- REPLACE href WITH YOUR DISCORD LINK -->
-        <a class="social s4"
-           href="YOUR_DISCORD_LINK_HERE"
-           target="_blank"
-           rel="noopener noreferrer"
-           aria-label="Discord">
-
-            <svg viewBox="0 0 24 24">
-                <path d="M19.5 5.1A16.2 16.2 0 0 0 15.7 4l-.5 1a14.4 14.4 0 0 0-6.4 0l-.5-1c-1.4.2-2.7.6-3.8 1.1C2.1 8.5 1.4 11.8 1.7 15c1.5 1.1 3 1.8 4.6 2.3l1.1-1.5c-.6-.2-1.1-.5-1.6-.8l.4-.3c3.1 1.4 6.5 1.4 9.6 0l.4.3c-.5.3-1 .6-1.6.8l1.1 1.5c1.6-.5 3.1-1.2 4.6-2.3.4-3.7-.6-7-2.8-9.9ZM8.9 13.1c-.9 0-1.7-.8-1.7-1.8s.8-1.8 1.7-1.8 1.7.8 1.7 1.8-.8 1.8-1.7 1.8Zm6.2 0c-.9 0-1.7-.8-1.7-1.8s.8-1.8 1.7-1.8 1.7.8 1.7 1.8-.8 1.8-1.7 1.8Z"/>
-            </svg>
-
-        </a>
-
-
-        <!-- INSTAGRAM -->
-        <!-- REPLACE href WITH YOUR INSTAGRAM LINK -->
-        <a class="social s5"
-           href="YOUR_INSTAGRAM_LINK_HERE"
-           target="_blank"
-           rel="noopener noreferrer"
-           aria-label="Instagram">
-
-            <svg viewBox="0 0 24 24">
-                <path d="M7.2 2h9.6A5.2 5.2 0 0 1 22 7.2v9.6a5.2 5.2 0 0 1-5.2 5.2H7.2A5.2 5.2 0 0 1 2 16.8V7.2A5.2 5.2 0 0 1 7.2 2Zm-.1 2A3.1 3.1 0 0 0 4 7.1v9.8A3.1 3.1 0 0 0 7.1 20h9.8a3.1 3.1 0 0 0 3.1-3.1V7.1A3.1 3.1 0 0 0 16.9 4H7.1Zm9.7 1.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/>
-            </svg>
-
-        </a>
-
-
-        <!-- YOUTUBE -->
-        <!-- REPLACE href WITH YOUR YOUTUBE LINK -->
-        <a class="social s6"
-           href="YOUR_YOUTUBE_LINK_HERE"
-           target="_blank"
-           rel="noopener noreferrer"
-           aria-label="YouTube">
-
-            <svg viewBox="0 0 24 24">
-                <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.8V8.2l6.5 3.8-6.5 3.8Z"/>
-            </svg>
-
-        </a>
+        <div class="orbit-label">
+            Connected intelligence network
+        </div>
 
     </div>
 
 </section>
 
-
-<section class="section final">
+<section
+    class="section final"
+>
 
     <div class="section-inner reveal">
 
@@ -1387,24 +2203,33 @@ body{
         </div>
 
         <h2 class="section-title">
+
             Start with<br>
+
             <span>the framework.</span>
+
         </h2>
 
         <p class="section-description">
+
             Move from the landing page directly into the No Trace
             investigation environment.
+
         </p>
 
         <div class="hero-actions">
 
-            <!-- THIS IS THE MAIN LINK TO YOUR OTHER PAGE -->
-            <a href="https://pugilain-executer.github.io/No-Trance-Osint/framework.html"
-               class="button primary">
+            <a
+                href="https://pugilain-executer.github.io/No-Trance-Osint/framework.html"
+                class="button primary"
+            >
                 Launch No Trace
             </a>
 
-            <a href="#home" class="button">
+            <a
+                href="#home"
+                class="button"
+            >
                 Back to top
             </a>
 
@@ -1416,7 +2241,6 @@ body{
 
 </main>
 
-
 <footer class="footer">
 
     <div class="footer-left">
@@ -1425,23 +2249,27 @@ body{
 
     <div class="footer-links">
 
-        <!-- PUT YOUR LINKS HERE -->
-
-        <a href="YOUR_GITHUB_LINK_HERE"
-           target="_blank"
-           rel="noopener noreferrer">
+        <a
+            href="YOUR_GITHUB_LINK_HERE"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
             GitHub
         </a>
 
-        <a href="YOUR_X_LINK_HERE"
-           target="_blank"
-           rel="noopener noreferrer">
+        <a
+            href="YOUR_X_LINK_HERE"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
             X
         </a>
 
-        <a href="YOUR_DISCORD_LINK_HERE"
-           target="_blank"
-           rel="noopener noreferrer">
+        <a
+            href="YOUR_DISCORD_LINK_HERE"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
             Discord
         </a>
 
@@ -1449,375 +2277,909 @@ body{
 
 </footer>
 
-
 <script>
+"use strict";
+
 const cursor=document.getElementById("cursor");
 const cursorRing=document.getElementById("cursorRing");
 
-let mouseX=0;
-let mouseY=0;
-let ringX=0;
-let ringY=0;
+let mouseX=window.innerWidth/2;
+let mouseY=window.innerHeight/2;
 
-document.addEventListener("mousemove",e=>{
-    mouseX=e.clientX;
-    mouseY=e.clientY;
+let ringX=mouseX;
+let ringY=mouseY;
+
+let cursorVisible=false;
+
+document.addEventListener("mousemove",event=>{
+
+    mouseX=event.clientX;
+    mouseY=event.clientY;
+
+    cursorVisible=true;
+
     cursor.style.left=mouseX+"px";
     cursor.style.top=mouseY+"px";
+
 });
 
 function animateCursor(){
-    ringX+=(mouseX-ringX)*.14;
-    ringY+=(mouseY-ringY)*.14;
+
+    ringX+=(mouseX-ringX)*0.14;
+    ringY+=(mouseY-ringY)*0.14;
+
     cursorRing.style.left=ringX+"px";
     cursorRing.style.top=ringY+"px";
+
     requestAnimationFrame(animateCursor);
+
 }
 
 animateCursor();
 
+document.addEventListener("mouseleave",()=>{
 
-document.querySelectorAll("a,button").forEach(el=>{
-    el.addEventListener("mouseenter",()=>{
-        cursorRing.style.width="48px";
-        cursorRing.style.height="48px";
-    });
+    cursor.style.opacity="0";
+    cursorRing.style.opacity="0";
 
-    el.addEventListener("mouseleave",()=>{
-        cursorRing.style.width="32px";
-        cursorRing.style.height="32px";
-    });
 });
 
+document.addEventListener("mouseenter",()=>{
 
-const revealElements=document.querySelectorAll(
-    ".reveal,.reveal-left,.reveal-right"
-);
+    cursor.style.opacity="1";
+    cursorRing.style.opacity="1";
 
-const observer=new IntersectionObserver(
+});
+
+document.querySelectorAll("a,button").forEach(element=>{
+
+    element.addEventListener("mouseenter",()=>{
+
+        cursorRing.style.width="48px";
+        cursorRing.style.height="48px";
+
+    });
+
+    element.addEventListener("mouseleave",()=>{
+
+        cursorRing.style.width="32px";
+        cursorRing.style.height="32px";
+
+    });
+
+});
+
+const revealElements=[
+    ...document.querySelectorAll(
+        ".reveal,.reveal-left,.reveal-right"
+    )
+];
+
+const revealObserver=new IntersectionObserver(
     entries=>{
+
         entries.forEach(entry=>{
+
             if(entry.isIntersecting){
+
                 entry.target.classList.add("visible");
-            }else{
-                entry.target.classList.remove("visible");
+
             }
+
         });
+
     },
     {
-        threshold:.18
+        threshold:.12,
+        rootMargin:"-5% 0px -5% 0px"
     }
 );
 
-revealElements.forEach(el=>observer.observe(el));
+revealElements.forEach(element=>{
 
+    revealObserver.observe(element);
 
-const sections=[...document.querySelectorAll(".section")];
+});
+
+const sections=[
+    ...document.querySelectorAll(
+        "main > .section"
+    )
+];
+
+const navLinks=[
+    ...document.querySelectorAll(
+        ".nav-links a"
+    )
+];
 
 let currentSection=0;
-let scrolling=false;
+let sectionLocked=false;
+let sectionAnimationTimer=null;
+let wheelAccumulator=0;
+let lastWheelTime=0;
 
-function getCurrentSection(){
-    const center=window.innerHeight/2;
-    let closest=0;
-    let distance=Infinity;
+const isDesktopScroll=()=>{
+
+    return window.innerWidth>700;
+
+};
+
+function getSectionTop(section){
+
+    return Math.max(
+        0,
+        section.offsetTop
+    );
+
+}
+
+function getClosestSection(){
+
+    const scrollPosition=
+        window.scrollY+
+        window.innerHeight*.35;
+
+    let closestIndex=0;
+    let closestDistance=Infinity;
 
     sections.forEach((section,index)=>{
-        const rect=section.getBoundingClientRect();
-        const sectionCenter=rect.top+rect.height/2;
-        const d=Math.abs(sectionCenter-center);
 
-        if(d<distance){
-            distance=d;
-            closest=index;
+        const distance=Math.abs(
+            section.offsetTop-
+            scrollPosition
+        );
+
+        if(distance<closestDistance){
+
+            closestDistance=distance;
+            closestIndex=index;
+
         }
+
     });
 
-    return closest;
+    return closestIndex;
+
+}
+
+function updateCurrentSection(){
+
+    currentSection=getClosestSection();
+
+}
+
+function lockSection(){
+
+    sectionLocked=true;
+
+    clearTimeout(
+        sectionAnimationTimer
+    );
+
+    sectionAnimationTimer=setTimeout(()=>{
+
+        sectionLocked=false;
+        wheelAccumulator=0;
+
+        updateCurrentSection();
+
+    },850);
+
+}
+
+function moveToSection(index){
+
+    if(index<0){
+
+        index=0;
+
+    }
+
+    if(index>sections.length-1){
+
+        index=sections.length-1;
+
+    }
+
+    currentSection=index;
+
+    lockSection();
+
+    const destination=
+        getSectionTop(
+            sections[currentSection]
+        );
+
+    window.scrollTo({
+        top:destination,
+        behavior:"smooth"
+    });
+
+}
+
+function handleWheel(event){
+
+    if(!isDesktopScroll()){
+
+        return;
+
+    }
+
+    const now=performance.now();
+
+    if(now-lastWheelTime<18){
+
+        return;
+
+    }
+
+    lastWheelTime=now;
+
+    if(
+        event.ctrlKey||
+        event.metaKey||
+        event.shiftKey
+    ){
+
+        return;
+
+    }
+
+    event.preventDefault();
+
+    if(sectionLocked){
+
+        return;
+
+    }
+
+    const delta=event.deltaY;
+
+    if(Math.abs(delta)<1){
+
+        return;
+
+    }
+
+    wheelAccumulator+=delta;
+
+    const threshold=18;
+
+    if(
+        Math.abs(wheelAccumulator)<
+        threshold
+    ){
+
+        return;
+
+    }
+
+    const direction=
+        wheelAccumulator>0
+        ?1
+        :-1;
+
+    wheelAccumulator=0;
+
+    updateCurrentSection();
+
+    moveToSection(
+        currentSection+direction
+    );
+
 }
 
 window.addEventListener(
     "wheel",
-    e=>{
-        if(window.innerWidth<700)return;
-        if(scrolling)return;
-
-        const delta=e.deltaY;
-
-        if(Math.abs(delta)<10)return;
-
-        currentSection=getCurrentSection();
-
-        if(delta>0){
-            currentSection=Math.min(
-                currentSection+1,
-                sections.length-1
-            );
-        }else{
-            currentSection=Math.max(
-                currentSection-1,
-                0
-            );
-        }
-
-        scrolling=true;
-
-        sections[currentSection].scrollIntoView({
-            behavior:"smooth",
-            block:"center"
-        });
-
-        setTimeout(()=>{
-            scrolling=false;
-        },900);
-    },
-    {passive:true}
+    handleWheel,
+    {
+        passive:false
+    }
 );
 
-
 let touchStartY=0;
+let touchStartX=0;
+let touchTracking=false;
 
 window.addEventListener(
     "touchstart",
-    e=>{
-        touchStartY=e.touches[0].clientY;
+    event=>{
+
+        if(event.touches.length!==1){
+
+            return;
+
+        }
+
+        touchTracking=true;
+
+        touchStartY=
+            event.touches[0].clientY;
+
+        touchStartX=
+            event.touches[0].clientX;
+
     },
-    {passive:true}
+    {
+        passive:true
+    }
 );
 
 window.addEventListener(
     "touchend",
-    e=>{
-        if(scrolling)return;
+    event=>{
 
-        const touchEndY=e.changedTouches[0].clientY;
-        const difference=touchStartY-touchEndY;
+        if(!touchTracking){
 
-        if(Math.abs(difference)<60)return;
+            return;
 
-        currentSection=getCurrentSection();
-
-        if(difference>0){
-            currentSection=Math.min(
-                currentSection+1,
-                sections.length-1
-            );
-        }else{
-            currentSection=Math.max(
-                currentSection-1,
-                0
-            );
         }
 
-        scrolling=true;
+        touchTracking=false;
 
-        sections[currentSection].scrollIntoView({
-            behavior:"smooth",
-            block:"center"
-        });
+        if(sectionLocked){
 
-        setTimeout(()=>{
-            scrolling=false;
-        },900);
-    },
-    {passive:true}
-);
+            return;
 
+        }
 
-const navLinks=document.querySelectorAll(".nav-links a");
+        const touchEndY=
+            event.changedTouches[0].clientY;
 
-const navObserver=new IntersectionObserver(
-    entries=>{
-        entries.forEach(entry=>{
-            if(entry.isIntersecting){
-                navLinks.forEach(link=>{
-                    link.classList.remove("active");
+        const touchEndX=
+            event.changedTouches[0].clientX;
 
-                    if(
-                        link.getAttribute("href")===
-                        "#"+entry.target.id
-                    ){
-                        link.classList.add("active");
-                    }
-                });
-            }
-        });
+        const differenceY=
+            touchStartY-touchEndY;
+
+        const differenceX=
+            touchStartX-touchEndX;
+
+        if(
+            Math.abs(differenceY)<60||
+            Math.abs(differenceY)<
+            Math.abs(differenceX)
+        ){
+
+            return;
+
+        }
+
+        updateCurrentSection();
+
+        const direction=
+            differenceY>0
+            ?1
+            :-1;
+
+        moveToSection(
+            currentSection+direction
+        );
+
     },
     {
-        threshold:.55
+        passive:true
     }
 );
 
+window.addEventListener(
+    "keydown",
+    event=>{
+
+        const keys=[
+            "ArrowDown",
+            "ArrowUp",
+            "PageDown",
+            "PageUp",
+            "Home",
+            "End",
+            " "
+        ];
+
+        if(!keys.includes(event.key)){
+
+            return;
+
+        }
+
+        if(
+            event.target.tagName==="INPUT"||
+            event.target.tagName==="TEXTAREA"||
+            event.target.isContentEditable
+        ){
+
+            return;
+
+        }
+
+        if(!isDesktopScroll()){
+
+            return;
+
+        }
+
+        event.preventDefault();
+
+        if(sectionLocked){
+
+            return;
+
+        }
+
+        updateCurrentSection();
+
+        if(
+            event.key==="ArrowDown"||
+            event.key==="PageDown"||
+            event.key===" "
+        ){
+
+            moveToSection(
+                currentSection+1
+            );
+
+        }
+
+        if(
+            event.key==="ArrowUp"||
+            event.key==="PageUp"
+        ){
+
+            moveToSection(
+                currentSection-1
+            );
+
+        }
+
+        if(event.key==="Home"){
+
+            moveToSection(0);
+
+        }
+
+        if(event.key==="End"){
+
+            moveToSection(
+                sections.length-1
+            );
+
+        }
+
+    }
+);
+
+let anchorScrolling=false;
+
+document.querySelectorAll(
+    'a[href^="#"]'
+).forEach(link=>{
+
+    link.addEventListener(
+        "click",
+        event=>{
+
+            const targetID=
+                link.getAttribute("href");
+
+            if(
+                !targetID||
+                targetID==="#"
+            ){
+
+                return;
+
+            }
+
+            const target=
+                document.querySelector(
+                    targetID
+                );
+
+            if(!target){
+
+                return;
+
+            }
+
+            event.preventDefault();
+
+            const targetIndex=
+                sections.indexOf(target);
+
+            if(targetIndex!==-1){
+
+                anchorScrolling=true;
+
+                currentSection=
+                    targetIndex;
+
+                window.scrollTo({
+                    top:getSectionTop(target),
+                    behavior:"smooth"
+                });
+
+                clearTimeout(
+                    sectionAnimationTimer
+                );
+
+                sectionAnimationTimer=
+                    setTimeout(()=>{
+
+                        anchorScrolling=false;
+                        sectionLocked=false;
+
+                    },900);
+
+            }
+
+        }
+    );
+
+});
+
+const navObserver=
+    new IntersectionObserver(
+        entries=>{
+
+            entries.forEach(entry=>{
+
+                if(
+                    entry.isIntersecting
+                ){
+
+                    navLinks.forEach(link=>{
+
+                        link.classList.remove(
+                            "active"
+                        );
+
+                        if(
+                            link.getAttribute(
+                                "href"
+                            )===
+                            "#"+
+                            entry.target.id
+                        ){
+
+                            link.classList.add(
+                                "active"
+                            );
+
+                        }
+
+                    });
+
+                }
+
+            });
+
+        },
+        {
+            threshold:.55
+        }
+    );
+
 sections.forEach(section=>{
+
     if(section.id){
-        navObserver.observe(section);
+
+        navObserver.observe(
+            section
+        );
+
     }
+
 });
 
+const heroTitle=
+    document.querySelector(
+        ".hero h1"
+    );
 
-const title=document.querySelector(".hero h1");
+let ticking=false;
 
-window.addEventListener("scroll",()=>{
-    const y=window.scrollY;
+function updateScrollEffects(){
 
-    if(title){
-        title.style.transform=
-            "translateY("+(y*.08)+"px)";
+    if(ticking){
+
+        return;
+
     }
-});
 
+    ticking=true;
 
-const orbit=document.querySelector(".orbit-wrapper");
+    requestAnimationFrame(()=>{
 
-if(orbit){
+        const y=window.scrollY;
 
-    orbit.addEventListener("mousemove",e=>{
+        if(
+            heroTitle&&
+            window.innerWidth>700
+        ){
 
-        const rect=orbit.getBoundingClientRect();
+            heroTitle.style.transform=
+                "translate3d(0,"+
+                y*.08+
+                "px,0)";
 
-        const x=e.clientX-rect.left;
-        const y=e.clientY-rect.top;
+        }
 
-        const centerX=rect.width/2;
-        const centerY=rect.height/2;
+        ticking=false;
 
-        const rotateX=(y-centerY)/35;
-        const rotateY=(x-centerX)/35;
-
-        orbit.style.transform=
-            "perspective(900px) rotateX("+(-rotateX)+"deg) rotateY("+rotateY+"deg)";
-    });
-
-    orbit.addEventListener("mouseleave",()=>{
-        orbit.style.transform=
-            "perspective(900px) rotateX(0deg) rotateY(0deg)";
     });
 
 }
 
+window.addEventListener(
+    "scroll",
+    updateScrollEffects,
+    {
+        passive:true
+    }
+);
 
-document.querySelectorAll("a[href^='#']").forEach(link=>{
-    link.addEventListener("click",e=>{
+const orbitStage=
+    document.getElementById(
+        "orbitStage"
+    );
 
-        const targetID=link.getAttribute("href");
+const orbitWrapper=
+    document.getElementById(
+        "orbitWrapper"
+    );
 
-        if(targetID==="#" || !targetID)return;
+let orbitRotateX=0;
+let orbitRotateY=0;
 
-        const target=document.querySelector(targetID);
+if(orbitStage&&orbitWrapper){
 
-        if(target){
-            e.preventDefault();
+    orbitStage.addEventListener(
+        "mousemove",
+        event=>{
 
-            target.scrollIntoView({
-                behavior:"smooth",
-                block:"center"
-            });
+            if(
+                window.innerWidth<800
+            ){
+
+                return;
+
+            }
+
+            const rect=
+                orbitStage.getBoundingClientRect();
+
+            const x=
+                event.clientX-
+                rect.left;
+
+            const y=
+                event.clientY-
+                rect.top;
+
+            const centerX=
+                rect.width/2;
+
+            const centerY=
+                rect.height/2;
+
+            orbitRotateX=
+                (y-centerY)/45;
+
+            orbitRotateY=
+                (x-centerX)/45;
+
+            orbitWrapper.style.transform=
+                "perspective(900px) rotateX("+
+                (-orbitRotateX)+
+                "deg) rotateY("+
+                orbitRotateY+
+                "deg)";
+
         }
+    );
+
+    orbitStage.addEventListener(
+        "mouseleave",
+        ()=>{
+
+            orbitRotateX=0;
+            orbitRotateY=0;
+
+            orbitWrapper.style.transform=
+                "perspective(900px) rotateX(0deg) rotateY(0deg)";
+
+        }
+    );
+
+}
+
+const socialOrbit=
+    document.querySelector(
+        ".social-orbit"
+    );
+
+const socialItems=[
+    ...document.querySelectorAll(
+        ".social"
+    )
+];
+
+socialItems.forEach(
+    (social,index)=>{
+
+        social.addEventListener(
+            "mouseenter",
+            ()=>{
+
+                if(socialOrbit){
+
+                    socialOrbit.style.animationPlayState=
+                        "paused";
+
+                }
+
+            }
+        );
+
+        social.addEventListener(
+            "mouseleave",
+            ()=>{
+
+                if(socialOrbit){
+
+                    socialOrbit.style.animationPlayState=
+                        "running";
+
+                }
+
+            }
+        );
+
+    }
+);
+
+const moduleItems=[
+    ...document.querySelectorAll(
+        ".module"
+    )
+];
+
+moduleItems.forEach(
+    (module,index)=>{
+
+        module.style.transitionDelay=
+            index*.05+
+            "s";
+
+    }
+);
+
+const workflowItems=[
+    ...document.querySelectorAll(
+        ".workflow-card"
+    )
+];
+
+workflowItems.forEach(
+    (card,index)=>{
+
+        card.style.transitionDelay=
+            index*.08+
+            "s";
+
+    }
+);
+
+function normalizeLinks(){
+
+    document.querySelectorAll(
+        'a[target="_blank"]'
+    ).forEach(link=>{
+
+        link.setAttribute(
+            "rel",
+            "noopener noreferrer"
+        );
 
     });
-});
 
+}
 
-window.addEventListener("keydown",e=>{
+normalizeLinks();
 
-    if(
-        e.key!=="ArrowDown" &&
-        e.key!=="ArrowUp" &&
-        e.key!=="PageDown" &&
-        e.key!=="PageUp"
-    ){
-        return;
-    }
+function initialize(){
 
-    if(scrolling)return;
+    document.body.classList.add(
+        "loaded"
+    );
 
-    currentSection=getCurrentSection();
-
-    if(
-        e.key==="ArrowDown" ||
-        e.key==="PageDown"
-    ){
-        currentSection=Math.min(
-            currentSection+1,
-            sections.length-1
-        );
-    }
-
-    if(
-        e.key==="ArrowUp" ||
-        e.key==="PageUp"
-    ){
-        currentSection=Math.max(
-            currentSection-1,
-            0
-        );
-    }
-
-    scrolling=true;
-
-    sections[currentSection].scrollIntoView({
-        behavior:"smooth",
-        block:"center"
-    });
+    currentSection=
+        getClosestSection();
 
     setTimeout(()=>{
-        scrolling=false;
-    },900);
 
-});
-
-
-document.querySelectorAll(".module").forEach((module,index)=>{
-
-    module.style.transitionDelay=
-        (index*.05)+"s";
-
-});
-
-
-document.querySelectorAll(".workflow-card").forEach((card,index)=>{
-
-    card.style.transitionDelay=
-        (index*.08)+"s";
-
-});
-
-
-window.addEventListener("load",()=>{
-
-    document.body.classList.add("loaded");
-
-    setTimeout(()=>{
         document
-            .querySelector(".hero .reveal")
-            ?.classList.add("visible");
+            .querySelector(
+                ".hero .reveal"
+            )
+            ?.classList.add(
+                "visible"
+            );
+
     },150);
 
-});
+}
 
+window.addEventListener(
+    "load",
+    initialize
+);
 
-document.addEventListener("visibilitychange",()=>{
+document.addEventListener(
+    "visibilitychange",
+    ()=>{
 
-    if(document.hidden){
+        const rings=
+            document.querySelectorAll(
+                ".orbit-ring"
+            );
 
-        document
-            .querySelectorAll(".orbit-ring")
-            .forEach(ring=>{
-                ring.style.animationPlayState="paused";
-            });
+        const orbit=
+            document.querySelector(
+                ".social-orbit"
+            );
 
-    }else{
+        if(document.hidden){
 
-        document
-            .querySelectorAll(".orbit-ring")
-            .forEach(ring=>{
-                ring.style.animationPlayState="running";
-            });
+            rings.forEach(
+                ring=>{
+                    ring.style.animationPlayState=
+                        "paused";
+                }
+            );
+
+            if(orbit){
+
+                orbit.style.animationPlayState=
+                    "paused";
+
+            }
+
+        }else{
+
+            rings.forEach(
+                ring=>{
+                    ring.style.animationPlayState=
+                        "running";
+                }
+            );
+
+            if(orbit){
+
+                orbit.style.animationPlayState=
+                    "running";
+
+            }
+
+        }
 
     }
+);
 
-});
+window.addEventListener(
+    "resize",
+    ()=>{
 
+        if(window.innerWidth<=700){
+
+            sectionLocked=false;
+            wheelAccumulator=0;
+
+        }
+
+    }
+);
 
 if(
     window.matchMedia(
@@ -1825,27 +3187,20 @@ if(
     ).matches
 ){
 
-    document.querySelectorAll("*").forEach(el=>{
-        el.style.animationDuration="0.001ms";
-        el.style.transitionDuration="0.001ms";
-    });
+    document.querySelectorAll(
+        ".orbit-ring,.social-orbit"
+    ).forEach(
+        element=>{
+            element.style.animationPlayState=
+                "paused";
+        }
+    );
 
 }
 
-
-const externalLinks=document.querySelectorAll(
-    'a[target="_blank"]'
+console.log(
+    "No Trace OSINT Framework initialized."
 );
-
-externalLinks.forEach(link=>{
-    link.setAttribute(
-        "rel",
-        "noopener noreferrer"
-    );
-});
-
-
-console.log("No Trace OSINT Framework initialized.");
 </script>
 
 </body>
