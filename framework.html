@@ -82,6 +82,7 @@ button{
     inset:0;
     overflow:hidden;
     cursor:grab;
+    touch-action:none;
 }
 
 #workspace.dragging{
@@ -145,10 +146,32 @@ button{
     box-shadow:0 18px 45px rgba(0,0,0,.48);
     backdrop-filter:blur(16px);
     cursor:pointer;
+    touch-action:none;
     transition:
         border-color .16s ease,
         box-shadow .16s ease,
         transform .12s ease;
+}
+
+@keyframes nodeEnter{
+    from{
+        opacity:0;
+        transform:translate(-50%,-50%) scale(.82);
+    }
+    to{
+        opacity:1;
+        transform:translate(-50%,-50%) scale(1);
+    }
+}
+
+.node-enter{
+    animation:nodeEnter .38s cubic-bezier(.16,1,.3,1) both;
+}
+
+@keyframes edgeDraw{
+    to{
+        stroke-dashoffset:0;
+    }
 }
 
 .node:hover{
@@ -920,7 +943,9 @@ button{
     }
 
     #sourceSelect{
-        display:none;
+        max-width:74px;
+        padding:0 4px;
+        font-size:9px;
     }
 
     #targetInput{
@@ -939,6 +964,13 @@ button{
         right:12px;
         bottom:65px;
     }
+}
+
+input[type="checkbox"]{
+    accent-color:#f5f5f5;
+    width:15px;
+    height:15px;
+    cursor:pointer;
 }
 </style>
 </head>
@@ -1108,6 +1140,13 @@ button{
             TOOLKIT
         </button>
 
+        <button class="tool-button" data-tool="export">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M12 4v11M8 8l4-4 4 4M5 16v3a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3"/>
+            </svg>
+            ESPORTA
+        </button>
+
     </div>
 
     <div id="status">READY · NO DATA GENERATED</div>
@@ -1198,6 +1237,21 @@ function scheduleRender(){
         render();
     });
 }
+
+const animatedNodeIds = new Set();
+const animatedEdgeKeys = new Set();
+
+let clickCandidate = null;
+let clickStartX = 0;
+let clickStartY = 0;
+
+let touchMoved = false;
+let longPressTimer = null;
+
+let pinchActive = false;
+let pinchStartDistance = 0;
+let pinchStartScale = 1;
+let pinchMidpoint = {x:0,y:0};
 
 const SOCIALS = [
     {
@@ -1596,7 +1650,6 @@ function addNode(data){
     };
 
     nodes.push(node);
-    render();
 
     return node;
 }
@@ -1615,8 +1668,6 @@ function addEdge(a,b){
             b:b.id
         });
     }
-
-    render();
 }
 
 function removeNode(node){
@@ -1640,7 +1691,7 @@ function render(){
     nodesLayer.innerHTML="";
     edgeLayer.innerHTML="";
 
-    edges.forEach(edge=>{
+    edges.forEach((edge,index)=>{
         const a=nodes.find(n=>n.id===edge.a);
         const b=nodes.find(n=>n.id===edge.b);
 
@@ -1673,16 +1724,36 @@ function render(){
         );
 
         edgeLayer.appendChild(path);
+
+        const edgeKey=`${edge.a}-${edge.b}`;
+
+        if(!animatedEdgeKeys.has(edgeKey)){
+            const len=path.getTotalLength();
+
+            path.style.strokeDasharray=len;
+            path.style.strokeDashoffset=len;
+            path.style.animation=
+                `edgeDraw .45s ${Math.min(index*18,650)}ms cubic-bezier(.16,1,.3,1) forwards`;
+
+            animatedEdgeKeys.add(edgeKey);
+        }
     });
 
-    nodes.forEach(node=>{
+    nodes.forEach((node,index)=>{
         const el=document.createElement("div");
 
+        const isNewNode=!animatedNodeIds.has(node.id);
+
         el.className=
-            `node ${node.type} ${selectedNode?.id===node.id?"selected":""}`;
+            `node ${node.type} ${selectedNode?.id===node.id?"selected":""} ${isNewNode?"node-enter":""}`;
 
         el.style.left=`${node.x}px`;
         el.style.top=`${node.y}px`;
+
+        if(isNewNode){
+            el.style.animationDelay=`${Math.min(index*18,650)}ms`;
+            animatedNodeIds.add(node.id);
+        }
 
         el.innerHTML=`
             <div class="node-header">
@@ -1707,6 +1778,9 @@ function render(){
             e.stopPropagation();
 
             selectedNode=node;
+            clickCandidate=node;
+            clickStartX=e.clientX;
+            clickStartY=e.clientY;
 
             const p=screenToWorld(e.clientX,e.clientY);
 
@@ -1716,8 +1790,46 @@ function render(){
             dragOffsetY=node.y-p.y;
 
             updateSelectionBar();
-            render();
+            scheduleRender();
         });
+
+        el.addEventListener("touchstart",e=>{
+            if(e.touches.length!==1) return;
+
+            e.stopPropagation();
+
+            const t=e.touches[0];
+
+            selectedNode=node;
+            clickCandidate=node;
+            clickStartX=t.clientX;
+            clickStartY=t.clientY;
+            touchMoved=false;
+
+            const p=screenToWorld(t.clientX,t.clientY);
+
+            draggingNode=node;
+
+            dragOffsetX=node.x-p.x;
+            dragOffsetY=node.y-p.y;
+
+            updateSelectionBar();
+            scheduleRender();
+
+            clearTimeout(longPressTimer);
+
+            longPressTimer=setTimeout(()=>{
+                if(!touchMoved){
+                    draggingNode=null;
+                    clickCandidate=null;
+                    contextNode=node;
+
+                    if(navigator.vibrate) navigator.vibrate(12);
+
+                    openContextMenu(t.clientX,t.clientY,node.title);
+                }
+            },520);
+        },{passive:true});
 
         el.addEventListener("contextmenu",e=>{
             e.preventDefault();
@@ -1725,24 +1837,16 @@ function render(){
 
             selectedNode=node;
             contextNode=node;
+            clickCandidate=null;
 
             updateSelectionBar();
-            render();
+            scheduleRender();
 
             openContextMenu(
                 e.clientX,
                 e.clientY,
                 node.title
             );
-        });
-
-        el.addEventListener("dblclick",e=>{
-            e.preventDefault();
-            e.stopPropagation();
-
-            if(node.url){
-                window.open(node.url,"_blank","noopener,noreferrer");
-            }
         });
 
         nodesLayer.appendChild(el);
@@ -2073,6 +2177,83 @@ function addTypeSources(root,value,type,startY){
                 title:s[0],
                 source:"IP INTELLIGENCE",
                 subtitle:value,
+                url:s[1],
+                icon:iconGlobe()
+            });
+
+            addEdge(root,n);
+        });
+
+        nextY=layout.nextY;
+    }
+
+    if(type==="phone"){
+        const digitsOnly=value.replace(/[^\d+]/g,"");
+        const digitsNoPlus=digitsOnly.replace(/^\+/,"");
+
+        const sources=[
+            ["WhatsApp",`https://wa.me/${encodeURIComponent(digitsNoPlus)}`,"Deep link diretto · si apre solo se il numero e' su WhatsApp"],
+            ["Telegram",`https://t.me/+${encodeURIComponent(digitsNoPlus)}`,"Deep link diretto · funziona solo se l'utente ha reso il numero visibile"],
+            ["Google exact search",`https://www.google.com/search?q=${encodeURIComponent('"'+value+'"')}`,"Mentions esatte del numero"],
+            ["Google formato alt.",`https://www.google.com/search?q=${encodeURIComponent('"'+digitsOnly+'"')}`,"Numero senza spazi/simboli"],
+            ["Bing exact search",`https://www.bing.com/search?q=${encodeURIComponent('"'+value+'"')}`,"Mentions esatte del numero"],
+            ["DuckDuckGo",`https://duckduckgo.com/?q=${encodeURIComponent('"'+value+'"')}`,"Mentions esatte del numero"]
+        ];
+
+        const layout=layoutBatch(sources.length,3,310,150,startY);
+
+        sources.forEach((s,i)=>{
+            const n=addNode({
+                x:layout.positions[i].x,
+                y:layout.positions[i].y,
+                type:"source",
+                title:s[0],
+                source:"PHONE INTELLIGENCE",
+                subtitle:s[2],
+                url:s[1],
+                icon:iconGlobe()
+            });
+
+            addEdge(root,n);
+        });
+
+        nextY=layout.nextY;
+    }
+
+    if(type==="url"){
+        let clean=value;
+        let domain=value;
+
+        try{
+            const parsedUrl=new URL(
+                /^https?:\/\//i.test(value) ? value : "https://"+value
+            );
+
+            domain=parsedUrl.hostname;
+            clean=parsedUrl.href;
+        }catch{
+            domain=value.replace(/^https?:\/\//i,"").split("/")[0];
+        }
+
+        const sources=[
+            ["Wayback snapshot",`https://web.archive.org/web/*/${encodeURIComponent(clean)}`,"Cronologia archiviata dell'URL esatto"],
+            ["VirusTotal",`https://www.virustotal.com/gui/search/${encodeURIComponent(clean)}`,"Analisi dell'URL esatto"],
+            ["URLScan",`https://urlscan.io/search/#${encodeURIComponent('page.url:"'+clean+'"')}`,"Scansioni pubbliche dell'URL"],
+            ["Whois del dominio",`https://www.whois.com/whois/${encodeURIComponent(domain)}`,"Registrazione del dominio"],
+            ["crt.sh",`https://crt.sh/?q=${encodeURIComponent("%."+domain)}`,"Certificati SSL del dominio"],
+            ["Google mentions",`https://www.google.com/search?q=${encodeURIComponent('"'+clean+'"')}`,"Altre pagine che citano l'URL"]
+        ];
+
+        const layout=layoutBatch(sources.length,3,310,150,startY);
+
+        sources.forEach((s,i)=>{
+            const n=addNode({
+                x:layout.positions[i].x,
+                y:layout.positions[i].y,
+                type:"source",
+                title:s[0],
+                source:"URL INTELLIGENCE",
+                subtitle:s[2],
                 url:s[1],
                 icon:iconGlobe()
             });
@@ -2561,6 +2742,124 @@ function openSources(){
     modal.classList.add("visible");
 }
 
+function openExport(){
+    const exportable=nodes.filter(n=>n.type==="source" || n.type==="tool");
+
+    if(exportable.length===0){
+        showToast("Nessuna fonte da esportare");
+        return;
+    }
+
+    $("modalTitle").textContent="ESPORTA SELEZIONE";
+
+    $("modalBody").innerHTML=`
+        <div class="source-info">
+            <div class="source-info-title">
+                Seleziona le fonti da esportare
+            </div>
+            <div class="source-info-text">
+                Sei tu a decidere se un link corrisponde davvero al target.
+                NoTrace non conferma automaticamente nessuna identita': ogni
+                voce qui e' un link reale che hai gia' potuto verificare a mano.
+            </div>
+        </div>
+
+        <div class="field" style="display:flex;gap:8px">
+            <button class="small-action" id="exportSelectAll">SELEZIONA TUTTO</button>
+            <button class="small-action" id="exportSelectNone">DESELEZIONA TUTTO</button>
+        </div>
+
+        <div class="dork-list" id="exportList">
+            ${exportable.map(n=>`
+                <label class="dork" style="cursor:pointer">
+                    <div style="display:flex;align-items:center;gap:10px;min-width:0">
+                        <input type="checkbox" class="export-check" data-node-id="${n.id}" checked>
+                        <div style="min-width:0">
+                            <div class="dork-code">${escapeHTML(n.title)}</div>
+                            <div style="color:#555;font:8px 'JetBrains Mono',monospace;margin-top:4px">
+                                ${escapeHTML(n.source)}
+                            </div>
+                        </div>
+                    </div>
+                </label>
+            `).join("")}
+        </div>
+
+        <div class="field" style="display:flex;gap:8px;margin-top:14px">
+            <button class="small-action" id="exportDownload">SCARICA .TXT</button>
+            <button class="small-action" id="exportCopy">COPIA NEGLI APPUNTI</button>
+        </div>
+    `;
+
+    const getSelected=()=>{
+        const ids=[...$("exportList").querySelectorAll(".export-check:checked")]
+            .map(cb=>Number(cb.dataset.nodeId));
+
+        return exportable.filter(n=>ids.includes(n.id));
+    };
+
+    const buildText=selected=>{
+        const target=nodes.find(n=>n.type==="target");
+
+        const header=target
+            ? `NoTrace export · target: ${target.title} · ${new Date().toLocaleString()}\n\n`
+            : `NoTrace export · ${new Date().toLocaleString()}\n\n`;
+
+        return header+selected.map(n=>
+            `${n.title} [${n.source}]\n${n.url}\n`
+        ).join("\n");
+    };
+
+    $("exportSelectAll").addEventListener("click",()=>{
+        $("exportList").querySelectorAll(".export-check")
+            .forEach(cb=>{cb.checked=true;});
+    });
+
+    $("exportSelectNone").addEventListener("click",()=>{
+        $("exportList").querySelectorAll(".export-check")
+            .forEach(cb=>{cb.checked=false;});
+    });
+
+    $("exportDownload").addEventListener("click",()=>{
+        const selected=getSelected();
+
+        if(selected.length===0){
+            showToast("Seleziona almeno una fonte");
+            return;
+        }
+
+        const blob=new Blob([buildText(selected)],{type:"text/plain"});
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement("a");
+
+        a.href=url;
+        a.download="notrace-export.txt";
+        a.click();
+
+        URL.revokeObjectURL(url);
+
+        showToast(`${selected.length} fonti esportate`);
+    });
+
+    $("exportCopy").addEventListener("click",async()=>{
+        const selected=getSelected();
+
+        if(selected.length===0){
+            showToast("Seleziona almeno una fonte");
+            return;
+        }
+
+        try{
+            await navigator.clipboard.writeText(buildText(selected));
+            showToast(`${selected.length} fonti copiate negli appunti`);
+        }catch{
+            showToast("Copia non riuscita: usa 'Scarica .txt'");
+        }
+    });
+
+    modal.classList.add("visible");
+}
+
 function openSearchForNode(node){
     if(!node) return;
 
@@ -2771,9 +3070,139 @@ window.addEventListener("mousemove",e=>{
     }
 });
 
-window.addEventListener("mouseup",()=>{
+window.addEventListener("mouseup",e=>{
+    if(clickCandidate && clickCandidate===draggingNode){
+        const moved=Math.hypot(
+            e.clientX-clickStartX,
+            e.clientY-clickStartY
+        );
+
+        if(moved<6 && clickCandidate.url){
+            window.open(
+                clickCandidate.url,
+                "_blank",
+                "noopener,noreferrer"
+            );
+        }
+    }
+
+    clickCandidate=null;
     draggingNode=null;
     isPanning=false;
+
+    workspace.classList.remove("dragging");
+});
+
+function touchDistance(touches){
+    return Math.hypot(
+        touches[0].clientX-touches[1].clientX,
+        touches[0].clientY-touches[1].clientY
+    );
+}
+
+function touchMidpoint(touches){
+    return {
+        x:(touches[0].clientX+touches[1].clientX)/2,
+        y:(touches[0].clientY+touches[1].clientY)/2
+    };
+}
+
+workspace.addEventListener("touchstart",e=>{
+    if(e.target!==workspace && e.target.id!=="grid") return;
+
+    if(e.touches.length===1){
+        const t=e.touches[0];
+
+        isPanning=true;
+        panStartX=t.clientX-panX;
+        panStartY=t.clientY-panY;
+    }
+
+    if(e.touches.length===2){
+        isPanning=false;
+        pinchActive=true;
+        pinchStartDistance=touchDistance(e.touches);
+        pinchStartScale=scale;
+        pinchMidpoint=touchMidpoint(e.touches);
+    }
+},{passive:true});
+
+window.addEventListener("touchmove",e=>{
+    if(draggingNode && e.touches.length===1){
+        const t=e.touches[0];
+
+        const moved=Math.hypot(
+            t.clientX-clickStartX,
+            t.clientY-clickStartY
+        );
+
+        if(moved>8){
+            touchMoved=true;
+            clearTimeout(longPressTimer);
+        }
+
+        if(touchMoved){
+            e.preventDefault();
+
+            const p=screenToWorld(t.clientX,t.clientY);
+
+            draggingNode.x=p.x+dragOffsetX;
+            draggingNode.y=p.y+dragOffsetY;
+
+            scheduleRender();
+        }
+
+        return;
+    }
+
+    if(pinchActive && e.touches.length===2){
+        e.preventDefault();
+
+        const newDistance=touchDistance(e.touches);
+        const factor=newDistance/Math.max(1,pinchStartDistance);
+
+        const before=screenToWorld(pinchMidpoint.x,pinchMidpoint.y);
+
+        scale=Math.max(.2,Math.min(3.5,pinchStartScale*factor));
+
+        panX=pinchMidpoint.x-before.x*scale;
+        panY=pinchMidpoint.y-before.y*scale;
+
+        updateTransform();
+
+        return;
+    }
+
+    if(isPanning && e.touches.length===1){
+        e.preventDefault();
+
+        const t=e.touches[0];
+
+        panX=t.clientX-panStartX;
+        panY=t.clientY-panStartY;
+
+        updateTransform();
+    }
+},{passive:false});
+
+window.addEventListener("touchend",e=>{
+    clearTimeout(longPressTimer);
+
+    if(clickCandidate && clickCandidate===draggingNode && !touchMoved){
+        if(clickCandidate.url){
+            window.open(
+                clickCandidate.url,
+                "_blank",
+                "noopener,noreferrer"
+            );
+        }
+    }
+
+    clickCandidate=null;
+    draggingNode=null;
+    isPanning=false;
+    pinchActive=false;
+    touchMoved=false;
 
     workspace.classList.remove("dragging");
 });
@@ -2898,6 +3327,10 @@ document.querySelectorAll(".tool-button")
 
         if(tool==="tools"){
             openTools();
+        }
+
+        if(tool==="export"){
+            openExport();
         }
 
         if(tool==="dorks"){
